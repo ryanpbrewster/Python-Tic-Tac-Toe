@@ -118,24 +118,30 @@ class TicTacToeBoard:
 		board = TicTacToeBoard()
 		board.TTTBoard = self.TTTBoard[:]
 		row = math.floor((position - 1 ) / 3)
-		col = math.floor(3 - (position % 3))
+		col = ((position-1) % 3)
 		friendlyCount = 0
 		enemyCount = 0
 
-		# Checks if the row has any enemy tacs
-		for i in range(row, row+3):
+		# Checks if the row has any enemy tacs or friendly tacs
+		for i in range(row, row+2):
 			if board.TTTBoard[i] == enemyTac:
 				enemyCount = enemyCount + 1
+			elif board.TTTBoard[i] == tac:
+				friendlyCount = friendlyCount + 1
 
-		if enemyCount == 0:
+		if enemyCount == 0 and friendlyCount == 1:
 			return True
-
-		# Checks if the column has any enemy tacs
-		for i in range(col - 1, col + 6, 3):
+			
+		enemyCount = 0
+		
+		# Checks if the column has any enemy tacs or friendly tacs
+		for i in range(col, col + 6, 3):
 			if board.TTTBoard[i] == enemyTac:
 				enemyCount = enemyCount + 1
+			elif board.TTTBoard[i] == tac:
+				friendlyCount = friendlyCount + 1
 
-		if enemyCount == 0:
+		if enemyCount == 0 and friendlyCount == 1:
 			return True
 		else:
 			return False
@@ -149,7 +155,7 @@ class TicTacToeBoard:
 		board.TTTBoard = self.TTTBoard[:]
 		if board.putTac(tac, position):
 			# Looks for two or more possible winning moves created by placing a tac at position in question
-			for i in range(1, 9):
+			for i in range(1, 10):
 				if board.isWinningMove(tac, i):
 					numOfWinningMoves = numOfWinningMoves + 1
 			if numOfWinningMoves > 1:
