@@ -1,17 +1,25 @@
+""" This class is used for storing the board in Tic Tac Toe Games
+
+Methods in the class are used for printing the board, checking for wins and if the board is full,
+and for placing tacs.
+
+"""
+
 import math
 
 class TicTacToeBoard:
 	def __init__(self):
+		""" Initializes the board instance with an array of the digits 1 through 9 as characters. """
 		self.TTTBoard = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-	# Testing purposes only - game should be run with Tkinter GUI
 	def printBoard(self):
+		""" An instance method that prints out the board's current layout """
 		for i in range(0,4,3):
 			print(self.TTTBoard[i] + " | " + self.TTTBoard[i+1] + " | " + self.TTTBoard[i+2])
 			print("--+---+--")
 		print(self.TTTBoard[6] + " | " + self.TTTBoard[7] + " | " + self.TTTBoard[8] + "\n")
 	
 	def putTac(self, tac, pos):
-		# Checks if the board at that position is still set to its default value before placing a tac
+		""" An instance method that puts a given tac at the given place in the board array if that position is not filled. """
 		if int(pos) > 0 and int(pos) < 10:
 			if(self.TTTBoard[int(pos)-1] == str(pos)):
 				self.TTTBoard[int(pos)-1] = tac
@@ -22,6 +30,7 @@ class TicTacToeBoard:
 			return False
 			
 	def checkWin(self):
+		""" Instance methodchecking whether the board has a winner or not. Does not tell who the winner is."""
 		# Checks if any column has three in a row
 		for i in range(0,3):
 			if(self.TTTBoard[i] == self.TTTBoard[i+3] and self.TTTBoard[i] == self.TTTBoard[i + 6]):
@@ -37,7 +46,9 @@ class TicTacToeBoard:
 		return False
 		
 	def checkFull(self):
+		""" Checks if all of the array elements have an X or O or not. """
 		for i in self.TTTBoard:
 			if i != 'X' and i != 'O':
 				return False
 		return True
+		

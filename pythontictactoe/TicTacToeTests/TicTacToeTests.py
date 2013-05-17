@@ -1,6 +1,16 @@
+"""This module is for testing all of the code in the TicTacToeLogic package.
+
+Code here should be more or less self explanatory - the unit tests are written such that they are 
+documentation in themselves. Every test should test a single method or, in the case of a robust 
+method such as botMove(), test a specific subset of cases relating to a single method.
+
+The tests cannot be run from this package. There's a test runner with the project that uses this module.
+
+"""
+
 import unittest
-from TicTacToeAI import *
-from TicTacToeBoard import *
+from pythontictactoe.TicTacToeLogic.TicTacToeBoard import TicTacToeBoard
+from pythontictactoe.TicTacToeLogic.TicTacToeAI import TicTacToeAI
 
 class TestTicTacToeBoard(unittest.TestCase):
 	def test_CheckWin(self):
@@ -53,7 +63,6 @@ class TestTicTacToeBoard(unittest.TestCase):
 	
 	
 	def test_botMovePreventFork(self):
-		# Should lay down a tac to prevent an enemy fork
 		testBoard = TicTacToeBoard()
 		testAI = TicTacToeAI('O')
 		testBoard.putTac('X', 6)
@@ -61,7 +70,6 @@ class TestTicTacToeBoard(unittest.TestCase):
 		testAI.botMove(testBoard)
 		self.assertTrue(testBoard.TTTBoard[8], 'O')
 		
-		# Should create two tacs in a row to force enemy to block
 		testBoard = TicTacToeBoard()
 		testBoard.putTac('X', 1)
 		testBoard.putTac('X', 9)
@@ -118,5 +126,4 @@ class TestTicTacToeBoard(unittest.TestCase):
 		testAI.botMove(testBoard)
 		self.assertTrue(testBoard.TTTBoard[8], 'O')
 		
-		
-unittest.main()
+	

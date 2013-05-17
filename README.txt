@@ -1,17 +1,31 @@
 Python Tic-Tac-Toe:
 - Only compatible with PYTHON 3
 
+Installing Python 3:
+	* For windows users, download and run the installer for Python 3.3.2 or higher at http://python.org/download/
+	* For Linux users, check the python.org website or your distros website. For debian and ubuntu users, the command "sudo apt-get install python3.3" may work.
+	* For OS X users, download and run the installer for Python 3.3.2 or higher at http://www.python.org/download/
+
 File overview:
-	TicTacToe.py: Contains all of the logic for the TicTacToe game, including bot movement and tac placement
-	TicTacToeGUI.py: Runnable file to play Tic-Tac-Toe in a Tkinter GUI
-	TicTacToeGame.py: Runnable file to play Tic-Tac-Toe in the terminal
-	TicTacToeTests.py: Runnable file that runs unit tests on TicTacToe.py logic
+	TicTacBoard.py: Contains all of the logic for the TicTacToe board, including putting down tacs and checking for wins
+	TicTacToeAI.py: Contains all of the logic for the TicTacToeAI, including bot movement and detection of forks and wins.
+	TicTacToeGUI.py: Contains all of the code for a Tkinter GUI for TicTacToe
+	TicTacToeCLI.py: Contains all of the code for a Command Line Interface for TicTacToe
+	TicTacToeTests.py: Unit test suite for TicTacToeAI.py and TicTacToeBoard.py logic
+	PlayTicTacToe.py: Runnable file for launching the TicTacToe GUI
+	PlayTicTacToeCLI.py: Runnable file for launching the TicTacToe CLI
+	TicTacToeTestRunner.py: Runnable file for running the TicTacToe test suite
 
-To play:
-	* Run TicTacToeGUI.py using PYTHON 3
+Reading and modifying code:
+	* All code is documented according to PEP 8 and PEP 257
+	* Packages are separated accordingly: Logic layer, Interface layer, Test layer
+
+To run:
+	* Run PlayTicTacToe.py using PYTHON 3
 		- This is the primary way of playing the game.
-	* Alternatively, run TicTacToeGame.py using PYTHON 3
+		- To run, navigate to the folder containing PlayTicTacToe.py using the command line or terminal, then type "python PlayTicTacToe.py"
+	* Alternatively, run PlayTicTacToeCLI.py using PYTHON 3
 		- This is primarily used for testing, not recommended
-	* From the GUI, you can immediately start playing against a bot by clicking in one of the nine squares
-	* Otherwise, you can change the number in the number field at the top to "2" and click "Set number of players" to play without a bot
 
+To test:
+	* Run the TicTacToeTestRunner.py file using Python 3
