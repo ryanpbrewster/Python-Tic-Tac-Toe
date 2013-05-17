@@ -12,7 +12,7 @@ from pythontictactoe.TicTacToeLogic.TicTacToeBoard import TicTacToeBoard
 from pythontictactoe.TicTacToeLogic.TicTacToeAI import TicTacToeAI
 import math
 
-class TTTGame(Frame):
+class TicTacToeGUI(Frame):
 	def __init__(self, master):
 		""" This method takes a given Tkinter root and sets up the GUI """
 		Frame.__init__(self, master)

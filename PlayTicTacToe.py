@@ -5,9 +5,9 @@ The GUI is imported from the TicTacToeGUI package
 """
 
 from tkinter import *
-from pythontictactoe.TicTacToeInterfaces.TicTacToeGUI import TTTGame
+from pythontictactoe.TicTacToeInterfaces.TicTacToeGUI import TicTacToeGUI
 
 root = Tk()
 root.wm_title("Play TicTacToe!")
-TTT = TTTGame(root)
+TTT = TicTacToeGUI(root)
 root.mainloop()
