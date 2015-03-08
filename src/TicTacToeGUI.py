@@ -7,7 +7,7 @@ of the logic. This class should only contain logic relating to updating the GUI
 made in this class.
 """
 
-from Tkinter import *
+from tkinter import *
 import sys
 from src.TicTacToeBoard import TicTacToeBoard
 from src.TicTacToeAI import TicTacToeAI
@@ -23,15 +23,15 @@ class TicTacToeGUI(Frame):
         self.canvasHeight = self.height - 100
         self.root = master
         self.root.geometry(str(self.width)+"x"+str(self.height))
-        
+
         self.numPlayers = 1
         self.turn = 0
         self.gameOver = False
         self.TTTAI = TicTacToeAI('O')
         self.gameBoard = TicTacToeBoard()
-        
+
         self.createGame()
-        
+
     def createGame(self):
         """ This method sets or resets the canvas and GUI and is used for creating a new game or for initializing the GUI. """
         self.columnconfigure(0, pad = 5)

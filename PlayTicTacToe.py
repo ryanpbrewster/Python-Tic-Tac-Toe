@@ -4,7 +4,7 @@ The GUI is imported from the TicTacToeGUI package
 
 """
 
-from Tkinter import *
+from tkinter import *
 from src.TicTacToeGUI import TicTacToeGUI
 
 root = Tk()
