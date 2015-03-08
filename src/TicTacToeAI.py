@@ -1,4 +1,5 @@
-"""A class containing all of the logic for an AI that plays TicTacToe
+"""
+A class containing all of the logic for an AI that plays TicTacToe
 
 A note on the way the static and non-static methods work in this class:
 * Static methods take a board, a tac to check, and a position, and return an evaluation (true or false). 
@@ -10,7 +11,7 @@ supply information.
 
 """
 import math
-from pythontictactoe.TicTacToeLogic.TicTacToeBoard import TicTacToeBoard
+from src.TicTacToeBoard import TicTacToeBoard
 
 class TicTacToeAI:
 	def __init__(self,tac):

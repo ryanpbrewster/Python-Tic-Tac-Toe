@@ -4,8 +4,8 @@ The GUI is imported from the TicTacToeGUI package
 
 """
 
-from tkinter import *
-from pythontictactoe.TicTacToeInterfaces.TicTacToeGUI import TicTacToeGUI
+from Tkinter import *
+from src.TicTacToeGUI import TicTacToeGUI
 
 root = Tk()
 root.wm_title("Play TicTacToe!")

@@ -1,12 +1,13 @@
-"""This module is used for running a command line interface version of the tic tac toe game
+"""
+This module is used for running a command line interface version of the tic tac
+toe game
 
-Because the CLI imports TicTacToeBoard and TicTacToeAI, it has to be run from an external script which instantiates the
-CLI. 
-
+Because the CLI imports TicTacToeBoard and TicTacToeAI, it has to be run from
+an external script which instantiates the CLI.
 """
 
-from pythontictactoe.TicTacToeLogic.TicTacToeBoard import TicTacToeBoard
-from pythontictactoe.TicTacToeLogic.TicTacToeAI import TicTacToeAI
+from src.TicTacToeBoard import TicTacToeBoard
+from src.TicTacToeAI import TicTacToeAI
 
 class TicTacToeCLI:
 
@@ -82,24 +83,24 @@ class TicTacToeCLI:
 	def getNumPlayers(self):
 		""" Method used for prompting for the number of players """
 		print("Are there one or two players? Enter 1 for one player, or 2 for two players. \n")
-		numPlayers = input()
-		while(numPlayers != '1' and numPlayers != '2'):
-			numPlayers = input("That is an altogether unacceptable number of players. Please try again: ")
+		numPlayers = raw_input()
+		while numPlayers not in "12":
+			numPlayers = raw_input("That is an altogether unacceptable number of players. Please try again: ")
 		return int(numPlayers)
 		
 	def getSymbolChoice(self):
 		""" Method used for prompting for player one's choice of tac """
 		print("Player one, please enter your choice of X or O. X goes first.\n")
-		symbolChoice = input("").upper()
+		symbolChoice = raw_input("").upper()
 		while(symbolChoice != 'X' and symbolChoice != 'O'):
-			symbolChoice = input("That is an altogether unacceptable choice. Please try again: ").upper()
+			symbolChoice = raw_input("That is an altogether unacceptable choice. Please try again: ").upper()
 		return symbolChoice
 		
 	def getPlayAgainChoice(self):
 		""" Method used for prompting for whether or not the player or players will play again. """
 		print("Do you want to play again? Y/N")
-		playAgain = input("").upper()
+		playAgain = raw_input("").upper()
 		while(playAgain != 'Y' and playAgain != 'N'):
-			playAgain = input("That is an altogether unacceptable choice. Please try again: ").upper()
+			playAgain = raw_input("That is an altogether unacceptable choice. Please try again: ").upper()
 		return playAgain
 		
