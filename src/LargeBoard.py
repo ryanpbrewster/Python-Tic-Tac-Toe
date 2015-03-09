@@ -56,7 +56,6 @@ class LargeBoard:
         else:
             self.cur_board = None
         print("Placed %s at (%d,%d) in board (%d,%d)"%(tac, pos[0], pos[1], i, j))
-        print(self)
 
     def winner(self):
         """
@@ -69,8 +68,6 @@ class LargeBoard:
                 , [self.boards[2][0], self.boards[1][1], self.boards[0][2]] ]
         for bs in rows+cols+diags:
             if all(b.hasWinner() for b in bs) and bs[0].winner() == bs[1].winner() == bs[2].winner():
-                print("Found a winner")
-                print(bs[0].winner() + bs[1].winner() + bs[2].winner())
                 return bs[0].winner()
         return None
 
@@ -98,5 +95,5 @@ class LargeBoard:
             return True
         return False
 
-    def nonfullBoards(self):
-        return [ (i,j) for i in range(3) for j in range(3) if not self.boards[i][j].isFull() ]
+    def legalBoards(self):
+        return [ (i,j) for i in range(3) for j in range(3) if not self.boards[i][j].isLegal() ]

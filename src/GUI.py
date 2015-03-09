@@ -96,7 +96,6 @@ class GUI(Frame):
                         (x,y) = self.cellPosition( (i,j), (ii,jj) )
                         rect = self.gameCanvas.create_rectangle(x, y, x+self.cell_width, y+self.cell_height,
                                           fill = "white", tag=cell_tag, outline = 'black')
-                        print("Made (%d,%d) (%d,%d) with tag %s"%(i,j,ii,jj,cell_tag))
                         self.gameCanvas.tag_bind(rect, "<ButtonRelease-1>", self.tacClick)
                         self.rects[i][j][ii][jj] = rect
 
@@ -106,7 +105,6 @@ class GUI(Frame):
             # Determines which rectangle was clicked and gets tac position from that
             rect = self.gameCanvas.find_closest(event.x, event.y)
             cell_tag = self.gameCanvas.gettags(rect)[0]
-            print("CLICKING! TAG =", cell_tag)
 
             [i,j,ii,jj] = map(int, cell_tag)
 
@@ -115,7 +113,6 @@ class GUI(Frame):
 
             # Check to see if we've clicked in the active board
             if not self.game_board.isLegalPlay(board_pos, cell_pos):
-                print("That move is illegal")
                 return
 
             if self.turn == 0:
@@ -124,7 +121,6 @@ class GUI(Frame):
                 self.game_board.putTac('O', board_pos, cell_pos)
 
             self.updateCanvas()
-            print("Done updating canvas")
             if not self.game_board.hasWinner() and not self.game_board.isFull():
                 if self.turn == 1:
                     self.turn = 0
@@ -145,7 +141,6 @@ class GUI(Frame):
         """ This method wraps the AI botMove method and calls the canvas update method and switches turn. """
         move_board, move_pos = self.ai.chooseMove(self.game_board)
         self.game_board.putTac(self.ai.tac, move_board, move_pos)
-        print("The AI put down a %s"%self.ai.tac)
         self.updateCanvas()
         if self.game_board.hasWinner() or self.game_board.isFull():
             self.gameOver = True

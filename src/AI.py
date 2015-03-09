@@ -36,7 +36,7 @@ class AI:
 
         board_pos = big_board.cur_board
         if board_pos == None:
-            board_pos = big_board.nonfullBoards()[0]
+            board_pos = big_board.legalBoards()[0]
 
         (i,j) = board_pos
         pos = big_board.boards[i][j].emptyPositions()[0]
