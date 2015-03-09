@@ -86,5 +86,17 @@ class LargeBoard:
         """
         return all(self.boards[i][j].isFull() for i in range(3) for j in range(3))
 
+    def isActive(self, board_pos):
+        """
+        Is the board at board_pos active (that is, can you legally make a move
+        there?)
+        """
+        i, j = board_pos
+        if not self.boards[i][j].isLegal():
+            return False
+        if self.cur_board == None or self.cur_board == board_pos:
+            return True
+        return False
+
     def nonfullBoards(self):
         return [ (i,j) for i in range(3) for j in range(3) if not self.boards[i][j].isFull() ]

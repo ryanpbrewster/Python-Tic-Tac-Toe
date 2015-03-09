@@ -41,6 +41,8 @@ class GUI(Frame):
         self.ai = AI('O')
         self.game_board = LargeBoard()
 
+        self.rects = None
+
         self.createGame()
 
     def createGame(self):
@@ -65,6 +67,7 @@ class GUI(Frame):
         self.quitGameButton.grid(row = 2, column = 1)
         self.pack()
         self.createRectangles()
+        self.updateCanvas()
     
     def setPlayers(self):
         """ This method is called by the set players button to set the number of players. """
@@ -84,16 +87,18 @@ class GUI(Frame):
         A bunch of tkinter calls that set up the canvas on which the game boar
         is displayed
         """
+        self.rects = [[[[None for _ in range(3)] for _ in range(3)] for _ in range(3)] for _ in range(3)]
         for i in range(3):
             for j in range(3):
                 for ii in range(3):
                     for jj in range(3):
                         cell_tag = str(i) + str(j) + str(ii) + str(jj)
                         (x,y) = self.cellPosition( (i,j), (ii,jj) )
-                        currentRect = self.gameCanvas.create_rectangle(x, y, x+self.cell_width, y+self.cell_height,
+                        rect = self.gameCanvas.create_rectangle(x, y, x+self.cell_width, y+self.cell_height,
                                           fill = "white", tag=cell_tag, outline = 'black')
                         print("Made (%d,%d) (%d,%d) with tag %s"%(i,j,ii,jj,cell_tag))
-                        self.gameCanvas.tag_bind(currentRect, "<ButtonRelease-1>", self.tacClick)
+                        self.gameCanvas.tag_bind(rect, "<ButtonRelease-1>", self.tacClick)
+                        self.rects[i][j][ii][jj] = rect
 
     def tacClick(self, event):
         """ Handles placing tacs and swapping the turn when the canvas is clicked. """
@@ -108,20 +113,14 @@ class GUI(Frame):
             board_pos = (i, j)
             cell_pos = (ii, jj)
 
-            print("Board pos = ", board_pos)
-            print("Cell pos = ", cell_pos)
-
             # Check to see if we've clicked in the active board
             if not self.game_board.isLegalPlay(board_pos, cell_pos):
-                print("That move is illegal, setting it to black")
-                self.gameCanvas.itemconfig(rect, fill="black")
+                print("That move is illegal")
                 return
 
             if self.turn == 0:
-                print("GUI decided on X")
                 self.game_board.putTac('X', board_pos, cell_pos)
             else:
-                print("GUI decided on O")
                 self.game_board.putTac('O', board_pos, cell_pos)
 
             self.updateCanvas()
@@ -166,25 +165,54 @@ class GUI(Frame):
         """ This is the method called by the quit button to end the game. """
         self.root.quit()
         
+
     def updateCanvas(self):
         """ Updates the Tkinter canvas based on the Board object's state"""
-        # Checks each board position on TicTacToe board, then sets cooresponding canvas rectangle
+        # Draw each board
         for i in range(3):
             for j in range(3):
-                for ii in range(3):
-                    for jj in range(3):
-                        cell_tag = str(i) + str(j) + str(ii) + str(jj)
-                        rect = self.gameCanvas.find_withtag(cell_tag)
-                        if self.game_board.boards[i][j].board[ii][jj] == 'X':
-                            print("Found X at (%d,%d), (%d,%d), setting to red" % (i,j,ii,jj))
-                            self.gameCanvas.itemconfig(rect, fill = "red")
-                        elif self.game_board.boards[i][j].board[ii][jj] == 'O':
-                            self.gameCanvas.itemconfig(rect, fill = "blue")
-                            print("Found O at (%d,%d), (%d,%d), setting to blue" % (i,j,ii,jj))
-                        else:
-                            self.gameCanvas.itemconfig(rect, fill = "white")
-        foo = self.gameCanvas.find_withtag("2222")
-        self.gameCanvas.itemconfig(foo, fill = "black")
+                if self.game_board.boards[i][j].hasWinner():
+                    winner = self.game_board.boards[i][j].winner()
+                    color = "red" if winner == "X" else "blue"
+                    self.fillBoard((i,j), color)
+                else:
+                    self.drawCells((i,j))
+
+                if self.game_board.isActive((i,j)):
+                    self.highlightBoard((i,j))
+                else:
+                    self.dimBoard((i,j))
+
+    def fillBoard(self, board_pos, color):
+        i, j = board_pos
+        for ii in range(3):
+            for jj in range(3):
+                rect = self.rects[i][j][ii][jj]
+                self.gameCanvas.itemconfig(rect, fill = color)
+
+    def drawCells(self, board_pos):
+        i, j = board_pos
+        for ii in range(3):
+            for jj in range(3):
+                rect = self.rects[i][j][ii][jj]
+                if self.game_board.boards[i][j].board[ii][jj] == 'X':
+                    self.gameCanvas.itemconfig(rect, fill = "red")
+                elif self.game_board.boards[i][j].board[ii][jj] == 'O':
+                    self.gameCanvas.itemconfig(rect, fill = "blue")
+
+    def outlineBoard(self, board_pos, color):
+        i, j = board_pos
+        for ii in range(3):
+            for jj in range(3):
+                rect = self.rects[i][j][ii][jj]
+                self.gameCanvas.itemconfig(rect, outline = color)
+
+    def highlightBoard(self, board_pos):
+        self.outlineBoard(board_pos, "black")
+
+    def dimBoard(self, board_pos):
+        self.outlineBoard(board_pos, "white")
+
 
     def drawEndGame(self):
         """ Draws a status to the board depending on how the game ended. """
