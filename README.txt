@@ -1,31 +1,15 @@
-Python Tic-Tac-Toe:
-- Only compatible with PYTHON 3
+A Python implementation of 9-board tic tac toe.
 
-Installing Python 3:
-	* For windows users, download and run the installer for Python 3.3.2 or higher at http://python.org/download/
-	* For Linux users, check the python.org website or your distros website. For debian and ubuntu users, the command "sudo apt-get install python3.3" may work.
-	* For OS X users, download and run the installer for Python 3.3.2 or higher at http://www.python.org/download/
+The rules are as follows:
+    The gamespace is divided into 9 boards (i.e., SmallBoard)
+    Each board has 9 spaces in it
+    A ``move'' involves putting a mark in a space
+    The space that is marked dictates which board must be used for the next player
+        That is, suppose player 1 places a mark in the upper left space of a board
+        Player 2 must then make a move in the upper left board (there is no constraint on which space they choose):w
 
-File overview:
-	TicTacBoard.py: Contains all of the logic for the TicTacToe board, including putting down tacs and checking for wins
-	TicTacToeAI.py: Contains all of the logic for the TicTacToeAI, including bot movement and detection of forks and wins.
-	TicTacToeGUI.py: Contains all of the code for a Tkinter GUI for TicTacToe
-	TicTacToeCLI.py: Contains all of the code for a Command Line Interface for TicTacToe
-	TicTacToeTests.py: Unit test suite for TicTacToeAI.py and TicTacToeBoard.py logic
-	PlayTicTacToe.py: Runnable file for launching the TicTacToe GUI
-	PlayTicTacToeCLI.py: Runnable file for launching the TicTacToe CLI
-	TicTacToeTestRunner.py: Runnable file for running the TicTacToe test suite
+    The first player may make a move whever they desire
 
-Reading and modifying code:
-	* All code is documented according to PEP 8 and PEP 257
-	* Packages are separated accordingly: Logic layer, Interface layer, Test layer
+    When a board is ``won'' (according to standard tic-tac-toe rules), it is no longer active
 
-To run:
-	* Run PlayTicTacToe.py using PYTHON 3
-		- This is the primary way of playing the game.
-		- To run, navigate to the folder containing PlayTicTacToe.py using the command line or terminal, then type "python PlayTicTacToe.py"
-	* Alternatively, run PlayTicTacToeCLI.py using PYTHON 3
-		- This is primarily used for testing, not recommended
-
-To test:
-	* Run the TicTacToeTestRunner.py file using Python 3
+    A player wins the game when they achieve a standard tic-tac-toe victory using won boards
