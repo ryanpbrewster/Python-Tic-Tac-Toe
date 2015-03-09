@@ -96,4 +96,4 @@ class LargeBoard:
         return False
 
     def legalBoards(self):
-        return [ (i,j) for i in range(3) for j in range(3) if not self.boards[i][j].isLegal() ]
+        return [ (i,j) for i in range(3) for j in range(3) if self.boards[i][j].isLegal() ]
