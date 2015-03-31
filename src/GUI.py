@@ -16,25 +16,76 @@ import math
 
 class GUI(Frame):
     PLAYER_COLOR_MAP = { 0 : "red", 1 : "blue" }
-    def __init__(self, master):
-        """ This method takes a given Tkinter root and sets up the GUI """
-        Frame.__init__(self, master)
+    def __init__(self, root):
+        """
+        Sets up the necessary data members, then opens the main menu
+        """
+        print("Initializing the GUI")
+        Frame.__init__(self, root)
 
-        self.cell_width   = 60
-        self.cell_height  = 60
-        self.board_width  = 3*self.cell_width
-        self.board_height = 3*self.cell_width
+        # A large board is a 3x3 array of small boards
+        # a small board is a 3x3 array of cells
 
-        self.horizontal_pad = 50
-        self.vertical_pad  = 50
+        self.dims = dict()
+        self.dims["cell_width"]  = 60
+        self.dims["cell_height"] = 60
+        self.dims["cell_hpad"]   = 0 # horizontal padding between cells
+        self.dims["cell_vpad"]   = 0 # vertical padding between cells
+        self.dims["sb_width"]    = 3*self.dims["cell_width"]  + 2*self.dims["cell_hpad"]
+        self.dims["sb_height"]   = 3*self.dims["cell_height"] + 2*self.dims["cell_vpad"]
+        self.dims["sb_hpad"]     = 50 # horizontal padding between small boards
+        self.dims["sb_vpad"]     = 50 # vertical padding between small boards
+        self.dims["lb_width"]    = 3*self.dims["sb_width"]  + 2*self.dims["sb_hpad"]
+        self.dims["lb_height"]   = 3*self.dims["sb_height"] + 2*self.dims["sb_vpad"]
 
-        self.width = 3*self.board_width + 2*self.horizontal_pad
-        self.height = 3*self.board_height + 2*self.vertical_pad
+        self.window_width = self.dims["lb_width"]
+        self.window_height = self.dims["lb_height"] + 50
+        self.root = root
+        self.root.geometry("%dx%d" % (self.window_width, self.window_height))
 
-        self.canvasWidth = self.width
-        self.canvasHeight = self.height
-        self.root = master
-        self.root.geometry(str(self.width)+"x"+str(self.height))
+        self.frame = None
+
+        print("Calling mainMenu")
+        self.mainMenu()
+
+    def mainMenu(self):
+        if self.frame != None:
+            self.frame.destroy()
+        self.frame = MenuFrame(self)
+        self.pack()
+
+    def newAIGame(self):
+        if self.frame != None:
+            self.frame.destroy()
+        self.frame = GameFrame(self, self.dims)
+        self.pack()
+
+class MenuFrame(Frame):
+    def __init__(self, root):
+        Frame.__init__(self, root)
+        print("Setting up main menu")
+        self.root = root
+
+        self.new_game_button = Button(self, text="Start AI Game", command = self.root.newAIGame)
+        self.new_game_button.grid(row = 1)
+
+        self.quit_button = Button(self, text = "Quit", command = self.quit)
+        self.quit_button.grid(row=2)
+
+        self.pack()
+
+    def quit(self):
+        self.root.quit()
+
+class GameFrame(Frame):
+    def __init__(self, root, dims):
+        """
+        This method sets up a new game board and a new canvas for displaying
+        that game board
+        """
+        Frame.__init__(self, root)
+        self.root = root
+        self.dims = dims
 
         self.numPlayers = 1
         self.turn = 0
@@ -42,34 +93,27 @@ class GUI(Frame):
         self.ai = AI('O')
         self.game_board = LargeBoard()
 
-        self.rects = None
+        self.game_board = LargeBoard()
+        self.turn = 0
+        self.gameOver = False
 
-        self.createGame()
+        self.game_canvas = Canvas(self, bg = "black",
+                               height = self.dims["lb_height"], width = self.dims["lb_width"])
+        self.game_canvas.grid(row = 1)
+        self.rects = self.createRectangles()
 
-    def createGame(self):
-        """
-        This method sets or resets the canvas and GUI and is used for creating
-        a new game or for initializing the GUI.
-        """
-        self.columnconfigure(0, pad = 5)
-        self.columnconfigure(1, pad = 5)
-        self.rowconfigure(0, pad = 10)
-        self.rowconfigure(1, pad = 10)
-        self.gameCanvas = Canvas(self, bg = "black", height = self.canvasHeight, width = self.canvasWidth)
-        self.gameCanvas.grid(row = 1, column = 0, columnspan = 2)
-        self.newGameButton = Button(self, text="New game", command = self.newGame)
-        self.quitGameButton = Button(self, text="Quit", command = self.quit)
-        self.newGameButton.grid(row = 2, column = 0)
-        self.quitGameButton.grid(row = 2, column = 1)
+        self.main_menu_button = Button(self, text="Main Menu", command = self.root.mainMenu)
+        self.main_menu_button.grid(row = 2)
+
         self.pack()
-        self.createRectangles()
+
         self.updateCanvas()
 
     def cellPosition(self, board_pos, cell_pos):
         (i,j) = board_pos
         (ii,jj) = cell_pos
-        x = j * (self.board_width + self.horizontal_pad) + jj*self.cell_width
-        y = i * (self.board_height + self.vertical_pad) + ii*self.cell_height
+        x = j * (self.dims["sb_width"]  + self.dims["sb_hpad"]) + jj*self.dims["cell_width"]
+        y = i * (self.dims["sb_height"] + self.dims["sb_vpad"]) + ii*self.dims["cell_height"]
         return (x,y)
 
     def createRectangles(self):
@@ -77,24 +121,26 @@ class GUI(Frame):
         A bunch of tkinter calls that set up the canvas on which the game boar
         is displayed
         """
-        self.rects = [[[[None for _ in range(3)] for _ in range(3)] for _ in range(3)] for _ in range(3)]
+        rects = [[[[None for _ in range(3)] for _ in range(3)] for _ in range(3)] for _ in range(3)]
         for i in range(3):
             for j in range(3):
                 for ii in range(3):
                     for jj in range(3):
+                        (x0,y0) = self.cellPosition( (i,j), (ii,jj) )
+                        (x1,y1) = (x0 + self.dims["cell_width"], y0 + self.dims["cell_height"])
                         cell_tag = str(i) + str(j) + str(ii) + str(jj)
-                        (x,y) = self.cellPosition( (i,j), (ii,jj) )
-                        rect = self.gameCanvas.create_rectangle(x, y, x+self.cell_width, y+self.cell_height,
-                                          fill = "white", tag=cell_tag, outline = 'black')
-                        self.gameCanvas.tag_bind(rect, "<ButtonRelease-1>", self.tacClick)
-                        self.rects[i][j][ii][jj] = rect
+                        rect = self.game_canvas.create_rectangle(x0, y0, x1, y1,
+                                          tag = cell_tag, fill = "white", outline = 'black')
+                        self.game_canvas.tag_bind(rect, "<ButtonRelease-1>", self.tacClick)
+                        rects[i][j][ii][jj] = rect
+        return rects
 
     def tacClick(self, event):
         """ Handles placing tacs and swapping the turn when the canvas is clicked. """
         if self.gameOver == False:
             # Determines which rectangle was clicked and gets tac position from that
-            rect = self.gameCanvas.find_closest(event.x, event.y)
-            cell_tag = self.gameCanvas.gettags(rect)[0]
+            rect = self.game_canvas.find_closest(event.x, event.y)
+            cell_tag = self.game_canvas.gettags(rect)[0]
 
             [i,j,ii,jj] = map(int, cell_tag)
 
@@ -138,14 +184,6 @@ class GUI(Frame):
         self.turn = 0
 
 
-    def newGame(self):
-        """ This method is called by the new game button and clears the canvas and board, resets the turn, and creates the GUI again. """
-        self.gameCanvas.delete(ALL)
-        self.game_board = LargeBoard()
-        self.turn = 0
-        self.gameOver = False
-        self.createGame()
-
     def quit(self):
         """ This is the method called by the quit button to end the game. """
         self.root.quit()
@@ -175,7 +213,7 @@ class GUI(Frame):
         for ii in range(3):
             for jj in range(3):
                 rect = self.rects[i][j][ii][jj]
-                self.gameCanvas.itemconfig(rect, fill = color)
+                self.game_canvas.itemconfig(rect, fill = color)
 
     def drawCells(self, board_pos):
         i, j = board_pos
@@ -183,16 +221,16 @@ class GUI(Frame):
             for jj in range(3):
                 rect = self.rects[i][j][ii][jj]
                 if self.game_board.boards[i][j].board[ii][jj] == 'X':
-                    self.gameCanvas.itemconfig(rect, fill = "red")
+                    self.game_canvas.itemconfig(rect, fill = "red")
                 elif self.game_board.boards[i][j].board[ii][jj] == 'O':
-                    self.gameCanvas.itemconfig(rect, fill = "blue")
+                    self.game_canvas.itemconfig(rect, fill = "blue")
 
     def outlineBoard(self, board_pos, color):
         i, j = board_pos
         for ii in range(3):
             for jj in range(3):
                 rect = self.rects[i][j][ii][jj]
-                self.gameCanvas.itemconfig(rect, outline = color)
+                self.game_canvas.itemconfig(rect, outline = color)
 
     def dimBoard(self, board_pos):
         self.outlineBoard(board_pos, "white")
@@ -202,9 +240,8 @@ class GUI(Frame):
         """ Draws a status to the board depending on how the game ended. """
         if self.game_board.hasWinner():
             if self.turn == 1:
-                self.gameCanvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Blue wins!")
+                self.game_canvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Blue wins!")
             else: 
-                self.gameCanvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Red wins!")
+                self.game_canvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Red wins!")
         elif self.game_board.isFull():
-            self.gameCanvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Game Draw!")
-            
+            self.game_canvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Game Draw!")
