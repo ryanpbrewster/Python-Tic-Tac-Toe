@@ -15,6 +15,7 @@ from src.AI import AI
 import math
 
 class GUI(Frame):
+    PLAYER_COLOR_MAP = { 0 : "red", 1 : "blue" }
     def __init__(self, master):
         """ This method takes a given Tkinter root and sets up the GUI """
         Frame.__init__(self, master)
@@ -54,11 +55,6 @@ class GUI(Frame):
         self.columnconfigure(1, pad = 5)
         self.rowconfigure(0, pad = 10)
         self.rowconfigure(1, pad = 10)
-        self.numPlayersField = Entry(self)
-        self.numPlayersField.insert(0,"1")
-        self.setPlayersButton = Button(self, text = "Set number of players", command = self.setPlayers)
-        self.numPlayersField.grid(row=0, column = 0)
-        self.setPlayersButton.grid(row=0, column = 1)
         self.gameCanvas = Canvas(self, bg = "black", height = self.canvasHeight, width = self.canvasWidth)
         self.gameCanvas.grid(row = 1, column = 0, columnspan = 2)
         self.newGameButton = Button(self, text="New game", command = self.newGame)
@@ -68,12 +64,6 @@ class GUI(Frame):
         self.pack()
         self.createRectangles()
         self.updateCanvas()
-    
-    def setPlayers(self):
-        """ This method is called by the set players button to set the number of players. """
-        tempNum = int(self.numPlayersField.get())
-        if tempNum == 1 or tempNum == 2:
-            self.numPlayers = int(self.numPlayersField.get())
 
     def cellPosition(self, board_pos, cell_pos):
         (i,j) = board_pos
@@ -155,15 +145,17 @@ class GUI(Frame):
         self.turn = 0
         self.gameOver = False
         self.createGame()
-        
+
     def quit(self):
         """ This is the method called by the quit button to end the game. """
         self.root.quit()
-        
+
 
     def updateCanvas(self):
         """ Updates the Tkinter canvas based on the Board object's state"""
         # Draw each board
+
+        player_color = GUI.PLAYER_COLOR_MAP[self.game_board.active_player]
         for i in range(3):
             for j in range(3):
                 if self.game_board.boards[i][j].hasWinner():
@@ -174,7 +166,7 @@ class GUI(Frame):
                     self.drawCells((i,j))
 
                 if self.game_board.isActive((i,j)):
-                    self.highlightBoard((i,j))
+                    self.outlineBoard((i,j), player_color)
                 else:
                     self.dimBoard((i,j))
 
@@ -201,9 +193,6 @@ class GUI(Frame):
             for jj in range(3):
                 rect = self.rects[i][j][ii][jj]
                 self.gameCanvas.itemconfig(rect, outline = color)
-
-    def highlightBoard(self, board_pos):
-        self.outlineBoard(board_pos, "black")
 
     def dimBoard(self, board_pos):
         self.outlineBoard(board_pos, "white")

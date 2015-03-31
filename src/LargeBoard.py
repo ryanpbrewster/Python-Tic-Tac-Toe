@@ -16,6 +16,7 @@ class LargeBoard:
         """
         self.boards = [[ SmallBoard() for j in range(3) ] for i in range(3) ]
         self.cur_board = None
+        self.active_player = 0
 
     def getBoard(self, pos):
         return self.boards[pos[0]][pos[1]]
@@ -43,6 +44,12 @@ class LargeBoard:
         # Lastly, make sure the spot in that board is open
         return self.boards[i][j].isPositionEmpty(cell_pos)
 
+    def switchActivePlayer(self):
+        if self.active_player == 0:
+            self.active_player = 1
+        else:
+            self.active_player = 0
+
     def putTac(self, tac, board_pos, pos):
         """
         Place `tac` in board (i,j) at position `pos`
@@ -55,6 +62,7 @@ class LargeBoard:
             self.cur_board = pos
         else:
             self.cur_board = None
+        self.switchActivePlayer()
         print("Placed %s at (%d,%d) in board (%d,%d)"%(tac, pos[0], pos[1], i, j))
 
     def winner(self):
