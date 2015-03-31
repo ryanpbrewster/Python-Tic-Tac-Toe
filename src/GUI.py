@@ -15,7 +15,6 @@ from src.AI import AI
 import math
 
 class GUI(Frame):
-    PLAYER_COLOR_MAP = { 0 : "red", 1 : "blue" }
     def __init__(self, root):
         """
         Sets up the necessary data members, then opens the main menu
@@ -78,6 +77,7 @@ class MenuFrame(Frame):
         self.root.quit()
 
 class GameFrame(Frame):
+    PLAYER_COLOR_MAP = { 0 : "red", 1 : "blue" }
     def __init__(self, root, dims):
         """
         This method sets up a new game board and a new canvas for displaying
@@ -193,7 +193,7 @@ class GameFrame(Frame):
         """ Updates the Tkinter canvas based on the Board object's state"""
         # Draw each board
 
-        player_color = GUI.PLAYER_COLOR_MAP[self.game_board.active_player]
+        player_color = GameFrame.PLAYER_COLOR_MAP[self.game_board.active_player]
         for i in range(3):
             for j in range(3):
                 if self.game_board.boards[i][j].hasWinner():
@@ -236,12 +236,27 @@ class GameFrame(Frame):
         self.outlineBoard(board_pos, "white")
 
 
+    def gameoverText(self):
+        """
+        Returns a string that describes how the game ended.
+        Raises an exception if the game is not over.
+        """
+        if self.game_board.hasWinner():
+            # The previous play must have won, so the active player lost
+            winning_player = self.game_board.nextPlayer()
+            winning_color = GameFrame.PLAYER_COLOR_MAP[winning_player]
+            return "{:s} player wins!".format(winning_color.title())
+        elif self.game_board.isFull():
+            return "Game Draw!"
+        else:
+            raise Exception("winnerText() called when there isn't a winner")
+
     def drawEndGame(self):
         """ Draws a status to the board depending on how the game ended. """
-        if self.game_board.hasWinner():
-            if self.turn == 1:
-                self.game_canvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Blue wins!")
-            else: 
-                self.game_canvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Red wins!")
-        elif self.game_board.isFull():
-            self.game_canvas.create_text((math.floor(self.canvasWidth/2), math.floor(self.canvasHeight / 2)), font=("Arial", 30), fill = 'green', text="Game Draw!")
+        xmid = self.dims["lb_width"]/2
+        ymid = self.dims["lb_height"]/2
+
+        self.game_canvas.create_text((xmid, ymid),
+                                     font=("Arial", 30),
+                                     fill = 'green',
+                                     text = self.gameoverText())

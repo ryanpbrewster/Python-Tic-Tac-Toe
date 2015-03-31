@@ -44,11 +44,14 @@ class LargeBoard:
         # Lastly, make sure the spot in that board is open
         return self.boards[i][j].isPositionEmpty(cell_pos)
 
-    def switchActivePlayer(self):
+    def nextPlayer(self):
         if self.active_player == 0:
-            self.active_player = 1
+            return 1
         else:
-            self.active_player = 0
+            return 0
+
+    def switchActivePlayer(self):
+        self.active_player = self.nextPlayer()
 
     def putTac(self, tac, board_pos, pos):
         """
