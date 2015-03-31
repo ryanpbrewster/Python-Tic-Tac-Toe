@@ -56,7 +56,13 @@ class GUI(Frame):
     def newAIGame(self):
         if self.frame != None:
             self.frame.destroy()
-        self.frame = GameFrame(self, self.dims)
+        self.frame = AIGameFrame(self, self.dims)
+        self.pack()
+
+    def newHumanGame(self):
+        if self.frame != None:
+            self.frame.destroy()
+        self.frame = HumanGameFrame(self, self.dims)
         self.pack()
 
 class MenuFrame(Frame):
@@ -68,8 +74,11 @@ class MenuFrame(Frame):
         self.new_game_button = Button(self, text="Start AI Game", command = self.root.newAIGame)
         self.new_game_button.grid(row = 1)
 
+        self.new_game_button = Button(self, text="Start 2P Game", command = self.root.newHumanGame)
+        self.new_game_button.grid(row = 2)
+
         self.quit_button = Button(self, text = "Quit", command = self.quit)
-        self.quit_button.grid(row=2)
+        self.quit_button.grid(row=3)
 
         self.pack()
 
@@ -87,15 +96,8 @@ class GameFrame(Frame):
         self.root = root
         self.dims = dims
 
-        self.numPlayers = 1
-        self.turn = 0
-        self.gameOver = False
-        self.ai = AI('O')
+        self.game_over = False
         self.game_board = LargeBoard()
-
-        self.game_board = LargeBoard()
-        self.turn = 0
-        self.gameOver = False
 
         self.game_canvas = Canvas(self, bg = "black",
                                height = self.dims["lb_height"], width = self.dims["lb_width"])
@@ -106,8 +108,8 @@ class GameFrame(Frame):
         self.main_menu_button.grid(row = 2)
 
         self.pack()
-
         self.updateCanvas()
+
 
     def cellPosition(self, board_pos, cell_pos):
         (i,j) = board_pos
@@ -137,7 +139,7 @@ class GameFrame(Frame):
 
     def tacClick(self, event):
         """ Handles placing tacs and swapping the turn when the canvas is clicked. """
-        if self.gameOver == False:
+        if not self.game_over:
             # Determines which rectangle was clicked and gets tac position from that
             rect = self.game_canvas.find_closest(event.x, event.y)
             cell_tag = self.game_canvas.gettags(rect)[0]
@@ -147,42 +149,19 @@ class GameFrame(Frame):
             board_pos = (i, j)
             cell_pos = (ii, jj)
 
-            # Check to see if we've clicked in the active board
+            # Check to see if we've clicked in an active board
             if not self.game_board.isLegalPlay(board_pos, cell_pos):
                 return
 
-            if self.turn == 0:
-                self.game_board.putTac('X', board_pos, cell_pos)
-            else:
-                self.game_board.putTac('O', board_pos, cell_pos)
+            self.game_board.playerMove(board_pos, cell_pos)
 
             self.updateCanvas()
-            if not self.game_board.hasWinner() and not self.game_board.isFull():
-                if self.turn == 1:
-                    self.turn = 0
-                else:
-                    self.turn = 1
-                if self.numPlayers == 1:
-                    self.gameBotMove()
-            else:
-                print("The game is over")
-                if self.game_board.hasWinner():
-                    print("We have a winner")
-                else:
-                    print("Board is full")
-                self.gameOver = True
+
+            self.swapPlayer()
+
+            if self.game_board.hasWinner() or self.game_board.isFull():
+                self.game_over = True
                 self.drawEndGame()
-
-    def gameBotMove(self):
-        """ This method wraps the AI botMove method and calls the canvas update method and switches turn. """
-        move_board, move_pos = self.ai.chooseMove(self.game_board)
-        self.game_board.putTac(self.ai.tac, move_board, move_pos)
-        self.updateCanvas()
-        if self.game_board.hasWinner() or self.game_board.isFull():
-            self.gameOver = True
-            self.drawEndGame()
-        self.turn = 0
-
 
     def quit(self):
         """ This is the method called by the quit button to end the game. """
@@ -260,3 +239,27 @@ class GameFrame(Frame):
                                      font=("Arial", 30),
                                      fill = 'green',
                                      text = self.gameoverText())
+
+class AIGameFrame(GameFrame):
+    def __init__(self, root, dims):
+        GameFrame.__init__(self, root, dims)
+        self.ai = AI("O")
+
+    def swapPlayer(self):
+        self.gameBotMove()
+
+    def gameBotMove(self):
+        """ This method wraps the AI botMove method and calls the canvas update method and switches turn. """
+        move_board, move_pos = self.ai.chooseMove(self.game_board)
+        self.game_board.playerMove(move_board, move_pos)
+        self.updateCanvas()
+        if self.game_board.hasWinner() or self.game_board.isFull():
+            self.game_over = True
+            self.drawEndGame()
+
+class HumanGameFrame(GameFrame):
+    def __init__(self, root, dims):
+        GameFrame.__init__(self, root, dims)
+
+    def swapPlayer(self):
+        pass

@@ -68,6 +68,10 @@ class LargeBoard:
         self.switchActivePlayer()
         print("Placed %s at (%d,%d) in board (%d,%d)"%(tac, pos[0], pos[1], i, j))
 
+    def playerMove(self, board_pos, pos):
+        active_tac = "X" if self.active_player == 0 else "O"
+        self.putTac(active_tac, board_pos, pos)
+
     def winner(self):
         """
         Instance methodchecking whether the board has a winner or not. Does not
