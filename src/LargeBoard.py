@@ -10,6 +10,7 @@ from src.Util import transpose
 from src.SmallBoard import SmallBoard
 
 class LargeBoard:
+    PLAYER_TAC_MAP = { 0 : "X", 1 : "O" }
     def __init__(self):
         """
         Initializes an 3x3 array of empty SmallBoards
@@ -56,9 +57,14 @@ class LargeBoard:
     def putTac(self, tac, board_pos, pos):
         """
         Place `tac` in board (i,j) at position `pos`
+        Fails if `tac` is 
         """
+        assert tac == LargeBoard.PLAYER_TAC_MAP[self.active_player]
+
         i, j = board_pos
         assert 0 <= i <= 2 and 0 <= j <= 2
+
+        assert self.isLegalPlay(board_pos, pos)
 
         self.boards[i][j].putTac(tac, pos)
         if self.getBoard(pos).isLegal():
@@ -69,13 +75,13 @@ class LargeBoard:
         print("Placed %s at (%d,%d) in board (%d,%d)"%(tac, pos[0], pos[1], i, j))
 
     def playerMove(self, board_pos, pos):
-        active_tac = "X" if self.active_player == 0 else "O"
+        active_tac = LargeBoard.PLAYER_TAC_MAP[self.active_player]
         self.putTac(active_tac, board_pos, pos)
 
     def winner(self):
         """
-        Instance methodchecking whether the board has a winner or not. Does not
-        tell who the winner is.
+        Figures out who the winner of this instance is. If there is no winner,
+        returns None
         """
         rows = self.boards
         cols = transpose(self.boards)

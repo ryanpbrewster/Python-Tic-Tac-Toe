@@ -16,15 +16,16 @@ A note on the way the static and non-static methods work in this class:
 import math
 
 class AI:
-    def __init__(self, tac):
+    def __init__(self, tac, level=5):
         """
         Initializes an AI instance with appropriate tacs. Should only be used
         if AI is going to play, not for making detections.
         """
         self.tac = tac
         self.enemy_tac = 'O' if tac == 'X' else 'X'
+        self.level = 5
 
-    def chooseMove(self, big_board):
+    def chooseMove(self, large_board):
         """
         Return (board_pos, pos), where board_pos is the position of the board
         you want to make a move in, and pos is the position within that board.
@@ -33,12 +34,14 @@ class AI:
 
         For now, the AI is dumb and just makes the first legal move it finds
         """
+        return self.firstLegalMove(large_board)
 
-        board_pos = big_board.cur_board
+    def firstLegalMove(self, large_board):
+        board_pos = large_board.cur_board
         if board_pos == None:
-            board_pos = big_board.legalBoards()[0]
+            board_pos = large_board.legalBoards()[0]
 
         (i,j) = board_pos
-        pos = big_board.boards[i][j].emptyPositions()[0]
+        pos = large_board.boards[i][j].emptyPositions()[0]
 
         return board_pos, pos

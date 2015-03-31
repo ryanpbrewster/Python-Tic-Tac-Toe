@@ -157,11 +157,12 @@ class GameFrame(Frame):
 
             self.updateCanvas()
 
-            self.swapPlayer()
-
             if self.game_board.hasWinner() or self.game_board.isFull():
                 self.game_over = True
                 self.drawEndGame()
+
+            self.swapPlayer()
+
 
     def quit(self):
         """ This is the method called by the quit button to end the game. """
@@ -232,6 +233,7 @@ class GameFrame(Frame):
 
     def drawEndGame(self):
         """ Draws a status to the board depending on how the game ended. """
+        print("Drawing the end game. Active player is", self.game_board.active_player)
         xmid = self.dims["lb_width"]/2
         ymid = self.dims["lb_height"]/2
 
@@ -246,16 +248,19 @@ class AIGameFrame(GameFrame):
         self.ai = AI("O")
 
     def swapPlayer(self):
+        print("AI making a move. Current player is", self.game_board.active_player)
         self.gameBotMove()
+        print("AI done. Current player is", self.game_board.active_player)
 
     def gameBotMove(self):
         """ This method wraps the AI botMove method and calls the canvas update method and switches turn. """
-        move_board, move_pos = self.ai.chooseMove(self.game_board)
-        self.game_board.playerMove(move_board, move_pos)
-        self.updateCanvas()
-        if self.game_board.hasWinner() or self.game_board.isFull():
-            self.game_over = True
-            self.drawEndGame()
+        if not self.game_over:
+            move_board, move_pos = self.ai.chooseMove(self.game_board)
+            self.game_board.playerMove(move_board, move_pos)
+            self.updateCanvas()
+            if self.game_board.hasWinner() or self.game_board.isFull():
+                self.game_over = True
+                self.drawEndGame()
 
 class HumanGameFrame(GameFrame):
     def __init__(self, root, dims):
