@@ -19,7 +19,6 @@ class GUI(Frame):
         """
         Sets up the necessary data members, then opens the main menu
         """
-        print("Initializing the GUI")
         Frame.__init__(self, root)
 
         # A large board is a 3x3 array of small boards
@@ -44,7 +43,6 @@ class GUI(Frame):
 
         self.frame = None
 
-        print("Calling mainMenu")
         self.mainMenu()
 
     def mainMenu(self):
@@ -68,7 +66,6 @@ class GUI(Frame):
 class MenuFrame(Frame):
     def __init__(self, root):
         Frame.__init__(self, root)
-        print("Setting up main menu")
         self.root = root
 
         self.new_game_button = Button(self, text="Start AI Game", command = self.root.newAIGame)
@@ -150,10 +147,10 @@ class GameFrame(Frame):
             cell_pos = (ii, jj)
 
             # Check to see if we've clicked in an active board
-            if not self.game_board.isLegalPlay(board_pos, cell_pos):
+            if not self.game_board.isLegalPlay((board_pos, cell_pos)):
                 return
 
-            self.game_board.playerMove(board_pos, cell_pos)
+            self.game_board.playerMove((board_pos, cell_pos))
 
             self.updateCanvas()
 
@@ -233,7 +230,6 @@ class GameFrame(Frame):
 
     def drawEndGame(self):
         """ Draws a status to the board depending on how the game ended. """
-        print("Drawing the end game. Active player is", self.game_board.active_player)
         xmid = self.dims["lb_width"]/2
         ymid = self.dims["lb_height"]/2
 
@@ -248,15 +244,13 @@ class AIGameFrame(GameFrame):
         self.ai = AI("O")
 
     def swapPlayer(self):
-        print("AI making a move. Current player is", self.game_board.active_player)
         self.gameBotMove()
-        print("AI done. Current player is", self.game_board.active_player)
 
     def gameBotMove(self):
         """ This method wraps the AI botMove method and calls the canvas update method and switches turn. """
         if not self.game_over:
-            move_board, move_pos = self.ai.chooseMove(self.game_board)
-            self.game_board.playerMove(move_board, move_pos)
+            ai_move = self.ai.chooseMove(self.game_board)
+            self.game_board.playerMove(ai_move)
             self.updateCanvas()
             if self.game_board.hasWinner() or self.game_board.isFull():
                 self.game_over = True

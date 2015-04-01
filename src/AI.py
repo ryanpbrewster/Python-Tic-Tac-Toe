@@ -13,17 +13,22 @@ A note on the way the static and non-static methods work in this class:
   information.
 
 """
-import math
+from copy import deepcopy
 
 class AI:
-    def __init__(self, tac, level=5):
+    WIN_REWARD = 100
+    UNKNOWN_REWARD = 50
+    LOSE_REWARD = 0
+
+
+    def __init__(self, tac, level=1):
         """
         Initializes an AI instance with appropriate tacs. Should only be used
         if AI is going to play, not for making detections.
         """
         self.tac = tac
         self.enemy_tac = 'O' if tac == 'X' else 'X'
-        self.level = 5
+        self.level = level
 
     def chooseMove(self, large_board):
         """
@@ -34,14 +39,46 @@ class AI:
 
         For now, the AI is dumb and just makes the first legal move it finds
         """
-        return self.firstLegalMove(large_board)
+        moves = self.allLegalMoves(large_board)
+        scores = [ self.scoreMove(large_board, move) for move in moves ]
+        best_move = max(zip(scores, moves))[1]
+        return best_move
+
+
+    def allMoves(self):
+        return [ ((i,j), (ii,jj)) for i  in range(3) for j  in range(3)
+                                  for ii in range(3) for jj in range(3) ]
+
+    def allLegalMoves(self, large_board):
+        return [ move for move in self.allMoves() if large_board.isLegalPlay(move) ]
 
     def firstLegalMove(self, large_board):
-        board_pos = large_board.cur_board
-        if board_pos == None:
-            board_pos = large_board.legalBoards()[0]
+        return self.allLegalMoves(large_board)[0]
 
-        (i,j) = board_pos
-        pos = large_board.boards[i][j].emptyPositions()[0]
+    def dumbScore(self, large_board):
+        winner = large_board.winner()
+        if winner == self.tac:
+            return AI.WIN_REWARD
+        elif winner == self.enemy_tac:
+            return AI.LOSE_REWARD
+        else:
+            return AI.UNKNOWN_REWARD
 
-        return board_pos, pos
+    def scoreBoard(self, large_board):
+        if self.level == 0:
+            return self.dumbScore(large_board)
+
+        lower_ai = AI(self.enemy_tac, self.level - 1)
+        enemy_moves = lower_ai.allLegalMoves(large_board)
+        if len(enemy_moves) == 0:
+            return self.dumbScore(large_board)
+
+        enemy_scores = [ lower_ai.scoreMove(large_board, move) for move in enemy_moves ]
+        enemy_best_score = max(enemy_scores)
+
+        return -enemy_best_score
+
+    def scoreMove(self, large_board, move):
+        copy_board = deepcopy(large_board)
+        copy_board.putTac(self.tac, move)
+        return self.scoreBoard(copy_board)

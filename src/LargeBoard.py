@@ -26,10 +26,11 @@ class LargeBoard:
         return "\n".join("(%d,%d) -> %s"%(i,j, str(self.boards[i][j]))
                              for i in range(3) for j in range(3) )
 
-    def isLegalPlay(self, board_pos, cell_pos):
+    def isLegalPlay(self, move):
         """
         Is it legal to place a tac at the given board_pos and cell_pos?
         """
+        board_pos, cell_pos = move
         i, j = board_pos
         assert 0 <= i <= 2 and 0 <= j <= 2
 
@@ -54,29 +55,30 @@ class LargeBoard:
     def switchActivePlayer(self):
         self.active_player = self.nextPlayer()
 
-    def putTac(self, tac, board_pos, pos):
+    def putTac(self, tac, move):
         """
         Place `tac` in board (i,j) at position `pos`
         Fails if `tac` is 
         """
         assert tac == LargeBoard.PLAYER_TAC_MAP[self.active_player]
+        assert self.isLegalPlay(move)
 
+        board_pos, cell_pos = move
         i, j = board_pos
-        assert 0 <= i <= 2 and 0 <= j <= 2
 
-        assert self.isLegalPlay(board_pos, pos)
+        self.boards[i][j].putTac(tac, cell_pos)
 
-        self.boards[i][j].putTac(tac, pos)
-        if self.getBoard(pos).isLegal():
-            self.cur_board = pos
+        # If the SMALL_BOARD that corresponds to the CELL is legal, then it
+        # is the next active board. Otherwise, all boards are active
+        if self.getBoard(cell_pos).isLegal():
+            self.cur_board = cell_pos
         else:
             self.cur_board = None
         self.switchActivePlayer()
-        print("Placed %s at (%d,%d) in board (%d,%d)"%(tac, pos[0], pos[1], i, j))
 
-    def playerMove(self, board_pos, pos):
+    def playerMove(self, move):
         active_tac = LargeBoard.PLAYER_TAC_MAP[self.active_player]
-        self.putTac(active_tac, board_pos, pos)
+        self.putTac(active_tac, move)
 
     def winner(self):
         """
