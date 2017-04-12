@@ -13,3 +13,6 @@ The rules are as follows:
     When a board is ``won'' (according to standard tic-tac-toe rules), it is no longer active
 
     A player wins the game when they achieve a standard tic-tac-toe victory using won boards
+    
+The world's saddest single-player version of this game can be played at http://foolproof.io/nineboard/
+It was written in Elm (source: https://github.com/ryanpbrewster/nineboard).
